@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+import KMeans.KMeans
 
 main :: IO ()
-main = someFunc
+main = return ()

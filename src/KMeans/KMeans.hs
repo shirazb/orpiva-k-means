@@ -1,15 +1,20 @@
-module KMeans (
+module KMeans.KMeans (
   kmeans
 ) where
 
-import Data.List      (sortBy, minimumBy)
-import Data.Function  (on, (&))
+import Data.List      (sortBy, minimumBy, unwords)
+import Data.Function  (on)
+import Debug.Trace    (trace)
 
 type Attribute = Double
 type Point     = [Attribute]
 type Cluster   = [Point]
 
+debug = False
+
 kmeans :: Int -> [Point] -> [Cluster]
+kmeans 0 _
+  = error "K-Means clustering requires at least one cluster. Given none."
 kmeans k []
   = replicate k []
 kmeans k points@(p : ps)
@@ -41,10 +46,10 @@ kmeans' centroids clustersToPoints
     newCentroids = findClusterMeans newClustersToPoints
 
 -- Given a list of centroids and a list of points, clusters the points according
--- to the centroids i.e. returns a list of (index of closest centroid, point).
+-- to the centroids i.e. returns a list of: (index of closest centroid, point).
 recluster :: [Point] -> [Point] -> [(Int, Point)]
-recluster cps cs
-  = [ (closestCentroid cs p, p) | p <- cps ]
+recluster ps cs
+  = [ (closestCentroid cs p, p) | p <- ps ]
 
 mkClusters :: [(Int, Point)] -> [Cluster]
 mkClusters = undefined
@@ -53,17 +58,17 @@ mkClusters = undefined
 -- closest centroid
 closestCentroid :: [Point] -> Point -> Int
 closestCentroid (c : cs) p
-  = closestCentroid' 0 0 (euclidDist c p) cs
+  = closestCentroid' 0 1 (euclidDist c p) cs
   where
     closestCentroid' :: Int -> Int -> Double -> [Point] -> Int
     closestCentroid' minIdx _ _ []
       = minIdx
-    closestCentroid' minIdx curIdx leastDist (c : cs)
-      | dist < leastDist = closestCentroid' curIdx nextIdx dist cs
-      | otherwise        = closestCentroid' minIdx nextIdx leastDist cs
+    closestCentroid' minIdx nextIdx leastDist (c : cs)
+      | dist < leastDist = traceD debug $ closestCentroid' nextIdx (nextIdx + 1) dist cs
+      | otherwise        = traceD debug $ closestCentroid' minIdx (nextIdx + 1) leastDist cs
       where
-        dist = euclidDist c p
-        nextIdx = curIdx + 1
+        dist    = euclidDist c p
+        debug = unwords ["closestCentroid\'", show minIdx, show nextIdx, show leastDist, show (c:cs)]
 
 findClusterMeans :: [(Int, Point)] -> [Point]
 findClusterMeans = undefined
@@ -72,3 +77,5 @@ findClusterMeans = undefined
 euclidDist :: Point -> Point -> Double
 euclidDist p q
   = (sqrt . sum) $ zipWith (\i i' -> (i'- i) ^ 2) p q
+
+traceD = if debug then trace else (\x y -> y)
