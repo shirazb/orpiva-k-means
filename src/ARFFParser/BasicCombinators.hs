@@ -1,6 +1,10 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-{- This module defines the basic parser combinators. -}
+{- This module defines the basic parser combinators. 
+
+   DISCLAIMER: I had previously written most of this code as part of a
+               university compilers project.
+-}
 module ARFFParser.BasicCombinators where
 
 import Control.Applicative       (Alternative (..))
