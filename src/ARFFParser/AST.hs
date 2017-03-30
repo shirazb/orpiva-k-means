@@ -36,7 +36,7 @@ data Pair
 
 -- Ensure only valid floats, ints, strings parsed
 data Value
-  = QMark
+  = QMarkVal
   | FloatVal Float
   | IntVal Int
   | StringVal String

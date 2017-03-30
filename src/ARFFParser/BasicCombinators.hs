@@ -1,6 +1,6 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
-{- This module defines the basic parser combinators. 
+{- This module defines the basic parser combinators.
 
    DISCLAIMER: I had previously written most of this code as part of a
                university compilers project.
@@ -146,8 +146,8 @@ escapeChar = do
 
 -- POST: Parses either whole string or fails
 string :: String -> Parser Char String
-string []
-  = return []
+string ""
+  = return ""
 string (x:xs) = do
   char x
   string xs
