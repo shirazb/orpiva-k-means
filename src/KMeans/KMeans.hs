@@ -15,6 +15,10 @@ type Cluster   = [Point]
 debug = False
 traceD = if debug then trace else (\x y -> y)
 
+sortCps :: [(Int, Point)] -> [(Int, Point)]
+sortCps
+  = sortBy (compare `on` fst)
+
 kmeans :: Int -> [Point] -> [Cluster]
 kmeans 0 _
   = error "K-Means clustering requires at least one cluster. Given none."
@@ -55,7 +59,8 @@ recluster ps cs
   = [ (closestCentroid cs p, p) | p <- ps ]
 
 mkClusters :: [(Int, Point)] -> [Cluster]
-mkClusters = undefined
+mkClusters cps
+  = undefined
 
 -- Given a list of centriods and a point, returns the index in the list of the
 -- closest centroid
@@ -76,13 +81,12 @@ closestCentroid (c : cs) p
 -- Produces a list of the new centroids from the means of each cluster. clusters
 -- are given in the form of the (cluster index, point) pairs.
 -- FIXME: If a cluster had no points mapping to it, it is lost as no mean for it
---        is computed.
+--        is computed. The problem should probably be fixed before hitting this
+--        function.
 findClusterMeans :: [(Int, Point)] -> [Point]
-findClusterMeans list@((c, p) : cps)
-   = findClusterMeans orderedCps 0 1 p
+findClusterMeans cps@((c, p) : _)
+   = findClusterMeans (sortCps cps) 0 1 p
    where
-     orderedCps = sortBy (compare `on` fst) cps
-
      -- Divides each component of the point by a single integer value.
      dividePointByInt :: Point -> Int -> Point
      dividePointByInt p n
