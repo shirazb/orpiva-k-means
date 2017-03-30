@@ -58,11 +58,24 @@ recluster :: [Point] -> [Point] -> [(Int, Point)]
 recluster ps cs
   = [ (closestCentroid cs p, p) | p <- ps ]
 
+-- Given the cluster index - point pairings, returns a list of all the clusters
+-- of points.
 mkClusters :: [(Int, Point)] -> [Cluster]
 mkClusters cps
-  = undefined
+  = mkClusters' c [p] sortedCps
+  where
+    ((c, p) : sortedCps) = sortCps cps
 
--- Given a list of centriods and a point, returns the index in the list of the
+    -- For explanation, this is very similar to findClusterMeans' explained in
+    -- detail below. TODO: Extract out this recursive pattern.
+    mkClusters' :: Int -> [Point] -> [(Int, Point)] -> [Cluster]
+    mkClusters' _ cluster []
+      = [cluster]
+    mkClusters' clusterIdx cluster ((c, p) : cps)
+      | c == clusterIdx = mkClusters' clusterIdx (p : cluster) cps
+      | otherwise       = cluster : mkClusters' c [p] cps
+
+-- Given a list of centroids and a point, returns the index in the list of the
 -- closest centroid
 closestCentroid :: [Point] -> Point -> Int
 closestCentroid (c : cs) p
@@ -93,6 +106,10 @@ findClusterMeans cps@((c, p) : _)
        = let n' = fromIntegral n in [ x / n' | x <- p ]
 
      {-
+       findClusterMeans' :: [(Int, Point)] -> Int -> Int -> Point -> [Point]
+
+       Returns a list containing the mean point of each cluster.
+
        First argument is list of (cluster index, point) pairs that have been
        ordered so that they appear in asecnding order of cluster index.
 
