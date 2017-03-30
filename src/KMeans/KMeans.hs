@@ -1,16 +1,19 @@
+{-# LANGUAGE ParallelListComp #-}
+
 module KMeans.KMeans (
   kmeans
 ) where
 
-import Data.List      (sortBy, minimumBy, unwords)
+import Data.List      (sortBy, unwords)
 import Data.Function  (on)
 import Debug.Trace    (trace)
 
-type Attribute = Double
-type Point     = [Attribute]
+type Point     = [Double]
 type Cluster   = [Point]
 
+-- Debug flag that controls 'traceD' debug statements.
 debug = False
+traceD = if debug then trace else (\x y -> y)
 
 kmeans :: Int -> [Point] -> [Cluster]
 kmeans 0 _
@@ -67,15 +70,66 @@ closestCentroid (c : cs) p
       | dist < leastDist = traceD debug $ closestCentroid' nextIdx (nextIdx + 1) dist cs
       | otherwise        = traceD debug $ closestCentroid' minIdx (nextIdx + 1) leastDist cs
       where
-        dist    = euclidDist c p
+        dist  = euclidDist c p
         debug = unwords ["closestCentroid\'", show minIdx, show nextIdx, show leastDist, show (c:cs)]
 
+-- Produces a list of the new centroids from the means of each cluster. clusters
+-- are given in the form of the (cluster index, point) pairs.
+-- FIXME: If a cluster had no points mapping to it, it is lost as no mean for it
+--        is computed.
 findClusterMeans :: [(Int, Point)] -> [Point]
-findClusterMeans = undefined
+findClusterMeans list@((c, p) : cps)
+   = findClusterMeans orderedCps 0 1 p
+   where
+     orderedCps = sortBy (compare `on` fst) cps
+
+     -- Divides each component of the point by a single integer value.
+     dividePointByInt :: Point -> Int -> Point
+     dividePointByInt p n
+       = let n' = fromIntegral n in [ x / n' | x <- p ]
+
+     {-
+       First argument is list of (cluster index, point) pairs that have been
+       ordered so that they appear in asecnding order of cluster index.
+
+       Second argument is the index of the last cluster whose mean was being
+       computed. This is always less than or equal to the cluster at the
+       beginning of the list.
+
+       Third argument is the number of points so far in this cluster.
+
+       Fourth argument is the sum of the points in the cluster so far.
+
+       Given an empty list, the returned value is the singleton list containing
+       the mean of the current cluster (computed from the other arguments).
+
+       Otherwise, there are two cases. The head of the list either refers to the
+       current cluster, or we have traversed through all the points of the
+       cluster and now the head refers to the next cluster.
+
+       In the case where the current cluster's mean is still being computed,
+       keep the index of the current cluster the same; add one to the number of
+       points in this cluster; and add the current point to the sum so far.
+
+       In the case where the head of the lists represents the start of the next
+       cluster, compute the mean of the current cluster and recurse. The index
+       of the current cluster is now the index found in the head of the list;
+       the number of points in the cluster so far is one; and the sum of the
+       cluster so far is simply the point at the head of the list.
+
+       There is surely a much simpler design than this...
+     -}
+     findClusterMeans :: [(Int, Point)] -> Int -> Int -> Point -> [Point]
+     findClusterMeans [] _ numThisCluster sumThisCluster
+       = [sumThisCluster `dividePointByInt` numThisCluster]
+     findClusterMeans ((c, p) : cps) currClusterIdx numThisCluster sumThisCluster
+       | c == currClusterIdx = findClusterMeans cps currClusterIdx (numThisCluster + 1) newSum
+       | otherwise           = meanOfCluster : findClusterMeans cps c 1 p
+       where
+         newSum        = [ x + s | x <- p | s <- sumThisCluster]
+         meanOfCluster = sumThisCluster `dividePointByInt` numThisCluster
 
 -- Returns the Euclidean distance between two points.
 euclidDist :: Point -> Point -> Double
 euclidDist p q
   = (sqrt . sum) $ zipWith (\i i' -> (i'- i) ^ 2) p q
-
-traceD = if debug then trace else (\x y -> y)
