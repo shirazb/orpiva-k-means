@@ -1,6 +1,6 @@
 {- This module defines a number of combinators to handle lexical issues, such as
    removing whitespace and comments. It also handles distinguishing between
-   keywords and identifiers. 
+   keywords and identifiers.
 
    DISCLAIMER: I had previously written most of this code as part of a
                university compilers project.
@@ -19,7 +19,7 @@ import ARFFParser.BasicCombinators
 -- POST: Returns the symbol for a comment delimiter
 commentDelim :: String
 commentDelim
-  = "#"
+  = "%"
 
 -- POST: Removes single line comments
 comments :: Parser Char ()

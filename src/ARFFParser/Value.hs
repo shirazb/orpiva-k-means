@@ -1,6 +1,9 @@
 {- Parser of ARFF Values. -}
 module ARFFParser.Value (
-  parseValue
+  parseValue,
+  parseValueList,
+  parseIntLit,
+  parseStringLit
 ) where
 
 import ARFFParser.AST
@@ -9,9 +12,13 @@ import ARFFParser.Junk
 
 import Control.Applicative ((<|>), some, many, (*>))
 
+parseValueList :: Parser Char [Value]
+parseValueList
+  = sepby' parseValue (punctuation ',')
+
 parseValue :: Parser Char Value
-parseValue
-  = parseQMark
+parseValue = trimWS $
+      parseQMark
   <|> parseFloat
   <|> parseInt
   <|> parseString
