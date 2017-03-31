@@ -21,6 +21,7 @@ library
                      , ARFFParser.AST
                      , ARFFParser.Value
                      , ARFFParser.Pairs
+                     , ARFFParser.Adecls
   build-depends:       base >= 4.7 && < 5
                      , transformers >= 0.5.2.0
                      , mtl >= 2.2.1

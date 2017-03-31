@@ -63,7 +63,7 @@ parseSign = do
 -- Parses a single signed integer literal as an integer.
 parseIntLit :: Parser Char Int
 parseIntLit
-  = parseSign <*> (read <$> some digit)
+  = trimWS $ parseSign <*> (read <$> some digit)
 
 -- I really dont understand the EBNF for this, so I have resorted to
 -- this definition...

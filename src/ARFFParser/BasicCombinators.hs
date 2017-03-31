@@ -14,6 +14,7 @@ import Control.Monad.State       (MonadState (..), StateT (..))
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Maybe (MaybeT (..))
 import Data.Maybe                (fromJust)
+import Data.Char                 (toLower, toUpper, isLetter)
 
 type Position
   = (Int, Int)
@@ -119,6 +120,12 @@ upper :: Parser Char Char
 upper
   = satisfy (\x -> 'A' <= x && x <= 'Z')
 
+-- POST: Parses single case-insensitive letter
+caselessChar :: Char -> Parser Char Char
+caselessChar c
+  | isLetter c = char (toLower c) <|> char (toUpper c)
+  | otherwise  = failParser
+
 -- POST: Parses single letter
 letter :: Parser Char Char
 letter
@@ -151,6 +158,15 @@ string ""
 string (x:xs) = do
   char x
   string xs
+  return (x : xs)
+
+-- POST: Parses case-insensitive string
+caselessString :: String -> Parser Char String
+caselessString ""
+  = return ""
+caselessString (x:xs) = do
+  caselessChar x
+  caselessString xs
   return (x : xs)
 
 -- POST:    Parses zero or more occurences of p seperated by sep. Returns

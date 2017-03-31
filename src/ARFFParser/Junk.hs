@@ -61,10 +61,16 @@ token :: String -> Parser Char String
 token
   = trimWS . string
 
+-- POST: Parses ARFF declarations
+declaration :: String -> Parser Char String
+declaration s = trimWS $ do
+  char '@'
+  caselessString s
+
 -- POST: Parses keywords defined in the WACC language
 keyword :: String -> Parser Char String
 keyword k = do
-  kword <- leadingWS (string k)
+  kword <- leadingWS (caselessString k)
   check isSpace <|> check isPunctuation <|> check isComment
   junk
   return kword
@@ -104,11 +110,7 @@ bracket open p close
 -- TODO: Define keywords for ARFF
 -- POST: Returns the List of keywords defined in the wacc language
 keywords :: [String]
-keywords = ["while", "if", "fi", "else", "null", "pair", "is", "begin", "skip",
-            "end", "call", "newpair", "fst", "snd", "return", "read", "free",
-            "exit", "println", "print", "then", "do", "done", "int", "bool",
-            "char", "string", "len", "chr", "ord", "true", "false", "for", "init"
-            ,"new" ,"break", "continue", "self", "void", "class"]
+keywords = []
 
--- TOOD: Define operators for ARFF
-operators = undefined
+-- TODO: Define operators for ARFF
+operators = ['@']

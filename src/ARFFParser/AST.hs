@@ -21,11 +21,8 @@ data DataType
   | Real
   | String
   | Relational [Adecl] String -- cannot be empty
-  | DateData Date
-  | Values [Value] -- cannot be empty
-
-data Date
-  = Date (Maybe String)
+  | DateDataT (Maybe String)
+  | ValueDataT [Value] -- cannot be empty
 
 data Data
   = PairData [Pair] -- cannot be empty
