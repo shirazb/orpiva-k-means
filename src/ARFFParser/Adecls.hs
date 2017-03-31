@@ -1,6 +1,7 @@
 {- Parser of ARFF adecls, data and data types. -}
 module ARFFParser.Adecls (
   parseAdecls,
+  parseData
 ) where
 
 import ARFFParser.AST
