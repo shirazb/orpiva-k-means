@@ -1,6 +1,6 @@
 name:                orpiva-k-means
 version:             0.1.0.0
--- synopsis:
+synopsis:            Solution to K-Means Clustering problem of Orpiva challenge.
 -- description:
 homepage:            https://github.com/shirazb/orpiva-k-means#readme
 license:             BSD3
@@ -16,7 +16,17 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:      src
   exposed-modules:     KMeans.KMeans
+                     , ARFFParser.File
+  other-modules:       ARFFParser.BasicCombinators
+                     , ARFFParser.Junk
+                     , ARFFParser.AST
+                     , ARFFParser.Value
+                     , ARFFParser.Pairs
+                     , ARFFParser.Adecls
+                     , ARFFParser.Header
   build-depends:       base >= 4.7 && < 5
+                     , transformers >= 0.5.2.0
+                     , mtl >= 2.2.1
   default-language:    Haskell2010
 
 executable orpiva-k-means-exe
