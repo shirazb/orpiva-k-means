@@ -1,6 +1,6 @@
 {- Top-level parser for whole ARFF files. -}
 module ARFFParser.File (
-  parseFile
+  parseARFFFile
 ) where
 
 import ARFFParser.Adecls (parseAdecls, parseData)
@@ -11,6 +11,10 @@ import ARFFParser.Header
 
 import Control.Applicative (liftA2)
 import Control.Monad.State (get, unless)
+
+parseARFFFile :: String -> Either Error (Maybe ((ARFF, String), Position))
+parseARFFFile
+  = runParser parseFile
 
 parseFile :: Parser Char ARFF
 parseFile

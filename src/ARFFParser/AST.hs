@@ -9,31 +9,38 @@ module ARFFParser.AST where
 
 data ARFF
   = ARFF Header Data
+  deriving (Show, Eq)
+
 data Header
-  = Header String [Adecl] -- cannot be empty
+  = Header String [Adecl]
+  deriving (Show, Eq)
 
 data Adecl
   = Adecl String DataType
+  deriving (Show, Eq)
 
 data DataType
   = Numeric
   | Integer
   | Real
   | String
-  | Relational [Adecl] String -- cannot be empty
+  | Relational [Adecl] String
   | DateDataT (Maybe String)
-  | ValueDataT [Value] -- cannot be empty
+  | ValueDataT [Value]
+  deriving (Show, Eq)
 
 data Data
-  = PairData [Pair] -- cannot be empty
-  | ValueData [Value] -- cannot be empty
+  = PairData [Pair]
+  | ValueData [Value]
+  deriving (Show, Eq)
 
 data Pair
   = Pair Int Value
+  deriving (Show, Eq)
 
--- Ensure only valid floats, ints, strings parsed
 data Value
   = QMarkVal
   | FloatVal Float
   | IntVal Int
   | StringVal String
+  deriving (Show, Eq)
